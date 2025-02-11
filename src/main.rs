@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 fn main() {
     let input_file_name = "input.txt";
     let contents = std::fs::read_to_string(input_file_name).expect("Failed to read the input file");
@@ -9,11 +11,17 @@ pub struct Pos {
     x: i32,
     y: i32,
 }
-pub struct VisitedHouses {}
+pub struct VisitedHouses {
+    visited_houses: HashSet<Pos>,
+    current_position: Pos,
+}
 
 impl VisitedHouses {
     pub fn new() -> VisitedHouses {
-        VisitedHouses{}
+        VisitedHouses{
+            visited_houses: todo!(),
+            current_position: Pos{x: 0, y: 0},
+        }
     }
 
     pub fn num_visited_houses(&self) -> i32 {
@@ -21,7 +29,7 @@ impl VisitedHouses {
     }
 
     pub fn current_pos(&self) -> Pos {
-        Pos{x: 0, y: 0}
+        self.current_position
     }
 }
 
