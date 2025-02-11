@@ -4,10 +4,7 @@ fn main() {
     println!("{}", contents.len());
 }
 
-// (i32, i32) is an unnamed tuple
-// type Pos = (i32, i32); does not really help debugging but would work
-// pub struct Pos(i32, i32); this is a tuple and also works
-
+#[derive(PartialEq, Eq, Debug)]
 pub struct Pos {
     x: i32,
     y: i32,
@@ -21,6 +18,10 @@ impl VisitedHouses {
 
     pub fn num_visited_houses(&self) -> i32 {
         1
+    }
+
+    pub fn current_pos(&self) -> Pos {
+        Pos{x: 0, y: 0}
     }
 }
 
@@ -40,7 +41,7 @@ mod tests {
     fn test_visited_houses_new() {
         let visited_houses = VisitedHouses::new();
         assert_eq!(visited_houses.num_visited_houses(), 1);
-        assert_eq!(visited_houses.current_pos(), Pos(0, 0));
+        assert_eq!(visited_houses.current_pos(), Pos{x: 0, y: 0});
     }
 
     // #[test]
