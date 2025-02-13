@@ -19,6 +19,7 @@ impl Pos {
     }
 }
 
+#[derive(Copy,Clone)]
 pub enum Direction {
     North,
     South,
@@ -67,7 +68,7 @@ impl VisitedHouses {
 
 impl Default for VisitedHouses {
     fn default() -> Self {
-        VisitedHouses::new()
+        Self::new()
     }
 }
 
