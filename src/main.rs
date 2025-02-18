@@ -1,4 +1,5 @@
 use std::collections::HashSet;
+use std::str::FromStr;
 
 fn main() {
     let input_file_name = "input.txt";
@@ -6,7 +7,7 @@ fn main() {
     println!("{}", contents.len());
 }
 
-#[derive(PartialEq, Eq, Debug, Copy, Clone, Hash)]
+#[derive(PartialEq, Eq, Debug, Hash, Clone, Copy)]
 pub struct Pos {
     x: i32,
     y: i32,
@@ -19,13 +20,47 @@ impl Pos {
     }
 }
 
-#[derive(Copy,Clone)]
+#[derive(Copy,Clone, PartialEq, Eq, Debug)]
 pub enum Direction {
     North,
     South,
     East,
     West,
 }
+
+#[derive(Debug, PartialEq, Eq)]
+pub struct IllegalChar(char);
+
+impl TryFrom<char> for Direction{
+    type Error = IllegalChar;
+
+    fn try_from(c: char) -> Result<Self, Self::Error> {
+        match c {
+            '^' => Ok(Self::North),
+            'v' => Ok(Self::South),
+            '<' => Ok(Self::West),
+            '>' => Ok(Self::East),
+            _ => Err(IllegalChar(c)),
+        }
+    }
+}
+
+struct Moves {
+    moves: Vec<Direction>,
+}
+
+impl FromStr for Moves {
+    type Err = IllegalChar; 
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let moves = s
+        .chars()
+        .map(Direction::try_from)
+        .collect::<Result<Vec<Direction>, IllegalChar>>()?;
+        Ok(Self { moves })
+    }
+}
+
 pub struct VisitedHouses {
     visited_houses: HashSet<Pos>,
     current_position: Pos,
@@ -64,6 +99,12 @@ impl VisitedHouses {
         self.current_position = new_position;
         self.visited_houses.insert(new_position);
     }
+
+    pub fn perform_moves(&mut self, moves: Moves) {
+        for direction in moves.moves {
+            self.perform_move(direction);
+        }
+    }
 }
 
 impl Default for VisitedHouses {
@@ -85,14 +126,14 @@ mod tests {
         assert_eq!(visited_houses.current_pos(), Pos{x: 0, y: 0});
     }
 
-    // #[test]
-    // fn test_direction_try_from() {
-    //     assert_eq!('^'.try_into(), Ok(Direction::North));
-    //     assert_eq!('v'.try_into(), Ok(Direction::South));
-    //     assert_eq!('<'.try_into(), Ok(Direction::West));
-    //     assert_eq!('>'.try_into(), Ok(Direction::East));
-    //     assert_eq!('x'.try_into(), Err(IllegalDirectionCharacter('x')));
-    // }
+    #[test]
+    fn test_direction_try_from() {
+        assert_eq!('^'.try_into(), Ok(Direction::North));
+        assert_eq!('v'.try_into(), Ok(Direction::South));
+        assert_eq!('<'.try_into(), Ok(Direction::West));
+        assert_eq!('>'.try_into(), Ok(Direction::East));
+        assert_eq!(Direction::try_from('x'), Err(IllegalChar('x')));
+    }
 
     #[test]
     fn test_move_east() {
@@ -102,14 +143,14 @@ mod tests {
         assert_eq!(visited_houses.current_pos(), Pos::new(1, 0));
     }
 
-    // #[test]
-    // fn test_square_moves() {
-    //     let mut visited_houses = VisitedHouses::new();
-    //     let moves = Moves::from_str("^>v<").unwrap();
-    //     visited_houses.perform_moves(moves);
-    //     assert_eq!(visited_houses.num_visited_houses(), 4);
-    //     assert_eq!(visited_houses.current_pos(), Pos::new(0, 0));
-    // }
+    #[test]
+    fn test_square_moves() {
+        let mut visited_houses = VisitedHouses::new();
+        let moves = Moves::from_str("^>v<").unwrap();
+        visited_houses.perform_moves(moves);
+        assert_eq!(visited_houses.num_visited_houses(), 4);
+        assert_eq!(visited_houses.current_pos(), Pos::new(0, 0));
+    }
 
     // #[test]
     // fn test_up_down_moves() {
